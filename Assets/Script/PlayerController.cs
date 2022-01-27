@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
 {
-    private const float WalkSpeed = 2.0f;
+    private const float WalkSpeed = 4.0f;
     private const float AttackTime = 0.7f;
     private const float AttackRange = 3.0f;
     [SerializeField] private DynamicJoystick Joystick;
@@ -94,12 +94,17 @@ public class PlayerController : MonoBehaviour
         switch (_state)
         {
             case State.Idle:
+                character.AnimateIdle();
                 break;
             case State.Walk:
+                character.AnimateWalk();
                 break;
             case State.Run:
+                character.AnimateRun();
                 break;
             case State.Attack:
+                character.AnimateAttack();
+                attackTime = AttackTime;
                 break;
             case State.Win:
                 break;
@@ -112,18 +117,13 @@ public class PlayerController : MonoBehaviour
     {
         switch (_state)
         {
-            case State.Idle:
-                character.AnimateIdle();
+            case State.Idle:                
                 break;
-            case State.Walk:
-                character.AnimateWalk();
+            case State.Walk:                
                 break;
-            case State.Run:
-                character.AnimateRun();
+            case State.Run:                
                 break;
-            case State.Attack:
-                character.AnimateAttack();
-                attackTime = AttackTime;
+            case State.Attack:              
                 break;
             case State.Win:
                 break;
