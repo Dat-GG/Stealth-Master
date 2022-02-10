@@ -6,19 +6,21 @@ using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
 {
-    private const float WalkSpeed = 4.0f;
+    private const float WalkSpeed = 9.99f;
     private const float AttackTime = 0.7f;
-    private const float AttackRange = 3.0f;
+    private const float AttackRange = 4.0f;
     [SerializeField] private DynamicJoystick Joystick;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Character character;
     private float hp;
+    //Rigidbody rb;
     private enum State
     {
         Idle, Walk, Run, Attack, Win, Die
     }
     private Exit exit;
     private Enemy[] enemies;
+    private Enemy _target;
     private float attackTime;
     private State _state = State.Idle;
     void Start()
@@ -61,7 +63,17 @@ public class PlayerController : MonoBehaviour
             case State.Attack:
                 attackTime -= Time.deltaTime;
                 if (attackTime <= 0)
+                {
                     ChangeState(State.Walk);
+                }
+                else
+                {
+                    agent.velocity = Vector3.zero;
+                    var dir = _target.transform.position - transform.position;
+                    transform.forward = dir;
+                    transform.position += dir.normalized * Time.smoothDeltaTime * 2; 
+                }
+                    
                 break;
             case State.Win:
                 break;
@@ -76,6 +88,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Vector3.Distance(e.transform.position, transform.position) < AttackRange)
             {
+                _target = e;
                 ChangeState(State.Attack);
                 return true;
             }
