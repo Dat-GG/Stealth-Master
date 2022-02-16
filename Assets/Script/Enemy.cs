@@ -1,31 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+internal class Enemy : MonoBehaviour
 {
-    EnemyStates _currentstate;
-    void Start()
+    private EnemyStates _currentstate;
+    internal PatrolEnemyState PatrolEnemyState = new PatrolEnemyState();
+    internal ChaseEnemyState ChaseEnemyState = new ChaseEnemyState();
+    internal AttackEnemyState AttackEnemyState;
+    internal DamageEnemyState DamageEnemyState = new DamageEnemyState();
+    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private bool patrolloop = true;
+
+    internal NavMeshAgent Agent => agent;
+    protected virtual void Start()
     {
-        _currentstate = GetInitState();
-        if (_currentstate != null)
-            _currentstate.EnterState();
+        InitAttackEnemyState();
+        var points = new List<Vector3>();
+        var enemypatrolpoints = GetComponentsInChildren<EnemyPatrolPoint>();
+        points.Add(transform.position);
+        foreach (var p in enemypatrolpoints)
+        {
+            points.Add(p.transform.position);
+        }
+        PatrolEnemyState.Init(points, patrolloop);
+        PatrolEnemyState.Init(this);
+        ChangeState(PatrolEnemyState);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (_currentstate != null)
-            _currentstate.UpdateState();
+            _currentstate?.UpdateState();
     }
-    protected virtual EnemyStates GetInitState()
+    internal void ChangeState(EnemyStates newState)
     {
-        return null;
-    }
-    public void ChangeState(EnemyStates newState)
-    {
-        _currentstate.ExitState();
+        if (_currentstate == newState) return;
+        _currentstate?.ExitState();
         _currentstate = newState;
-        _currentstate.EnterState();
+        _currentstate?.EnterState();
+    }
+
+    protected void InitAttackEnemyState()
+    {
+
     }
 }

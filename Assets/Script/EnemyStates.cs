@@ -2,20 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyStates : MonoBehaviour
+internal abstract class EnemyStates 
 {
-   public virtual void EnterState()
+    protected Enemy Enemy;
+
+    internal void Init(Enemy enemy)
     {
-
+        Enemy = enemy;
     }
+    internal abstract void EnterState();
 
-    public virtual void UpdateState()
-    {
+    internal abstract void UpdateState();
 
-    }
 
-    public virtual void ExitState()
-    {
-
-    }
+    internal abstract void ExitState();
+  
 }

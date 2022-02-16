@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour
                     agent.velocity = Vector3.zero;
                     var dir = _target.transform.position - transform.position;
                     transform.forward = dir;
-                    transform.position += dir.normalized * Time.smoothDeltaTime * 2; 
+                    transform.position += dir.normalized * Time.smoothDeltaTime * 2;                    
                 }
                     
                 break;
