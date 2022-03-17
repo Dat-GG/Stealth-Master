@@ -6,7 +6,7 @@ using UnityEngine.AI;
 internal class Enemy : MonoBehaviour
 {
     private EnemyStates _currentstate;
-    internal PatrolEnemyState PatrolEnemyState = new PatrolEnemyState();
+    internal PatrolState PatrolState = new PatrolState();
     internal ChaseEnemyState ChaseEnemyState = new ChaseEnemyState();
     internal AttackEnemyState AttackEnemyState;
     internal DamageEnemyState DamageEnemyState = new DamageEnemyState();
@@ -24,13 +24,13 @@ internal class Enemy : MonoBehaviour
         {
             points.Add(p.transform.position);
         }
-        PatrolEnemyState.Init(points, patrolloop);
-        PatrolEnemyState.Init(this);
-        ChangeState(PatrolEnemyState);
+        PatrolState.Init(points, patrolloop);
+        PatrolState.Init(this);
+        ChangeState(PatrolState);
     }
 
     // Update is called once per frame
-    private void Update()
+    protected virtual void Update()
     {
             _currentstate?.UpdateState();
     }
