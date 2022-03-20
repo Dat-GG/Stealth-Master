@@ -6,26 +6,46 @@ using UnityEngine.AI;
 internal class Enemy : MonoBehaviour
 {
     private EnemyStates _currentstate;
-    internal PatrolState PatrolState = new PatrolState();
+    internal PatrolState PatrolState;
+    [SerializeField] private PatrolType patrolType;
+    [SerializeField] private Transform LookingDir;
     internal ChaseEnemyState ChaseEnemyState = new ChaseEnemyState();
     internal AttackEnemyState AttackEnemyState;
     internal DamageEnemyState DamageEnemyState = new DamageEnemyState();
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private bool patrolloop = true;
+    [SerializeField] EnemyCharacter character;
+    internal EnemyCharacter EnemyCharacter => character;
+
+    enum PatrolType
+    {
+        Idle, Walk
+    }
 
     internal NavMeshAgent Agent => agent;
     protected virtual void Start()
     {
         InitAttackEnemyState();
-        var points = new List<Vector3>();
-        var enemypatrolpoints = GetComponentsInChildren<EnemyPatrolPoint>();
-        points.Add(transform.position);
-        foreach (var p in enemypatrolpoints)
+        if (patrolType == PatrolType.Walk)
         {
-            points.Add(p.transform.position);
+            var movePatrol = new MovePatrolState();
+            var points = new List<Vector3>();
+            var enemypatrolpoints = GetComponentsInChildren<EnemyPatrolPoint>();
+            points.Add(transform.position);
+            foreach (var p in enemypatrolpoints)
+            {
+                points.Add(p.transform.position);
+            }
+            movePatrol.Init(this, points, patrolloop);
+            PatrolState = movePatrol;
         }
-        PatrolState.Init(points, patrolloop);
-        PatrolState.Init(this);
+        else
+        {
+            var idlePatrol = new IdlePatrolState();
+            idlePatrol.Init(this, LookingDir);
+            PatrolState = idlePatrol;
+        }
+        
         ChangeState(PatrolState);
     }
 

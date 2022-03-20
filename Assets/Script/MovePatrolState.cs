@@ -6,6 +6,18 @@ using UnityEngine;
 
 internal class MovePatrolState : PatrolState
 {
+    internal enum States
+    {
+        Move,
+        Turn,
+    }
+
+    private States _currentState;
+    private List<Vector3> _points;
+    private bool _loop;
+    private bool _reverse;
+    private int _targetIndex;
+    [SerializeField] private float turnSpeed = 180f;
     internal override void EnterState()
     {
         _currentState = States.Move;
@@ -14,9 +26,11 @@ internal class MovePatrolState : PatrolState
         _targetIndex = 0;
     }
 
-    internal override void ExitState()
+    internal void Init(Enemy enemy, List<Vector3> points, bool loop)
     {
-        throw new System.NotImplementedException();
+        Init(enemy);
+        _points = points;
+        _loop = loop;
     }
 
     internal override void UpdateState()
@@ -35,55 +49,34 @@ internal class MovePatrolState : PatrolState
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        //void Start()
-        //{
-        //    _currentState = States.Move;
-        //    Enemy.Agent.SetDestination(_points[0]);
-        //    _reverse = false;
-        //    _targetIndex = 0;
-        //}
 
-        //void Update()
-        //{
-        //    switch (_currentState)
-        //    {
-        //        case States.Move:
-        //            var a = Vector3.Distance(Enemy.transform.position, _points[_targetIndex]);
-        //            if (a <= 0.1f)
-        //            {
-        //                ChangeStates(States.Turn);
-        //            }
-        //            break;
-        //        case States.Turn:
-        //            break;
-        //        default:
-        //            throw new ArgumentOutOfRangeException();
-        //    }
-        //}
+    void ChangeStates(States newState)
+    {
+        if (_currentState == newState) return;
+        ExitCurrentState();
+        _currentState = newState;
+        EnterNewState();
+    }
 
-        void ChangeStates(States newState)
+    void EnterNewState()
+    {
+        switch (_currentState)
         {
-            if (_currentState == newState) return;
-            ExitCurrentState();
-            _currentState = newState;
-            EnterNewState();
-        }
-
-        void EnterNewState()
-        {
-            switch (_currentState)
-            {
-                case States.Move:
-                    Enemy.Agent.SetDestination(_points[_targetIndex]);
+            case States.Move:
+                Enemy.Agent.SetDestination(_points[_targetIndex]);
+                    Enemy.EnemyCharacter.AnimateWalk();
+                break;
+            case States.Turn:
+                    Enemy.EnemyCharacter.AnimateIdle();
+                    Rotate(_points[_targetIndex], turnSpeed, () =>
+                    {
+                        ChangeStates(States.Move);
+                    });
                     break;
-                case States.Turn:
-                    Enemy.transform.DOLookAt(_points[_targetIndex], 1f).OnComplete
-                        (() => { ChangeStates(States.Move); });
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+    }
 
         void ExitCurrentState()
         {
