@@ -6,6 +6,7 @@ TagManager:
   tags:
   - exit
   - Exit
+  - weapond
   layers:
   - Default
   - TransparentFX

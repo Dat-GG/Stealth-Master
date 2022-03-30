@@ -9,13 +9,18 @@ internal class Enemy : MonoBehaviour
     internal PatrolState PatrolState;
     [SerializeField] private PatrolType patrolType;
     [SerializeField] private Transform LookingDir;
-    internal ChaseEnemyState ChaseEnemyState = new ChaseEnemyState();
+    internal readonly ChaseEnemyState ChaseEnemyState = new ChaseEnemyState();
     internal AttackEnemyState AttackEnemyState;
-    internal DamageEnemyState DamageEnemyState = new DamageEnemyState();
+    internal readonly DamageEnemyState DamageEnemyState = new DamageEnemyState();
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private bool patrolloop = true;
     [SerializeField] EnemyCharacter character;
     internal EnemyCharacter EnemyCharacter => character;
+    [SerializeField] private Transform lookpos1;
+    internal Transform Lookpos1 => lookpos1;
+
+    [SerializeField] private Transform lookpos2;
+    internal Transform Lookpos2 => lookpos2;
 
     enum PatrolType
     {
@@ -43,9 +48,10 @@ internal class Enemy : MonoBehaviour
         {
             var idlePatrol = new IdlePatrolState();
             idlePatrol.Init(this, LookingDir);
+            
             PatrolState = idlePatrol;
         }
-        
+        DamageEnemyState.Init(this);
         ChangeState(PatrolState);
     }
 
@@ -53,6 +59,11 @@ internal class Enemy : MonoBehaviour
     protected virtual void Update()
     {
             _currentstate?.UpdateState();
+    }
+
+    private void OnDamaged()
+    {
+        ChangeState(DamageEnemyState);
     }
     internal void ChangeState(EnemyStates newState)
     {
@@ -65,5 +76,27 @@ internal class Enemy : MonoBehaviour
     protected void InitAttackEnemyState()
     {
 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag($"weapond") && _currentstate != DamageEnemyState)
+        {
+            OnDamaged();
+        }
+    }
+    internal Vector3 AlarmPos { get; set; }
+
+    internal void OnAlarmed(Vector3 pos)
+    {
+        AlarmPos = pos;
+        if (_currentstate == PatrolState)
+        {
+            PatrolState.OnAlarmed();
+        }
+        else if (_currentstate == ChaseEnemyState)
+        {
+            ChaseEnemyState.OnAlarmed();
+        }
     }
 }

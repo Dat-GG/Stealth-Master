@@ -14,7 +14,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Character character;
     private float hp;
-    //Rigidbody rb;
+
+    internal static PlayerController Instance { get; private set; }
     private enum State
     {
         Idle, Walk, Run, Attack, Win, Die
@@ -24,6 +25,11 @@ public class PlayerController : MonoBehaviour
     private Enemy _target;
     private float attackTime;
     private State _state = State.Idle;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         enemies = FindObjectsOfType<Enemy>();
@@ -90,7 +96,7 @@ public class PlayerController : MonoBehaviour
             if (Vector3.Distance(e.transform.position, transform.position) < AttackRange)
             {
                 _target = e;
-                ChangeState(State.Attack);
+                //ChangeState(State.Attack);
                 return true;
             }
         }
