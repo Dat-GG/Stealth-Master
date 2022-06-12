@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class EnemyVision : MonoBehaviour
 {
-	private Enemy _enemy;
+	private Enemy enemy;
 	private void Start()
 	{
-		_enemy = GetComponentInParent<Enemy>();
+		enemy = GetComponentInParent<Enemy>();
 	}
 
 	private void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.CompareTag("Player"))
 		{
-			_enemy.OnAlarmed(other.transform.position);
+			enemy.OnAlarmed(other.transform.position);
+			Debug.LogError("1");
 		}
 	}
 
@@ -22,8 +23,8 @@ public class EnemyVision : MonoBehaviour
 	{
 		if (other.gameObject.CompareTag("Player"))
 		{
-			_enemy.AlarmPos = other.transform.position;
-			_enemy.Agent.SetDestination(_enemy.AlarmPos);
+			enemy.AlarmPos = other.transform.position;
+			enemy.Agent.SetDestination(enemy.AlarmPos);
 		}
 	}
 }

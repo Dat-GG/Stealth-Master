@@ -66,7 +66,9 @@ internal class ChaseEnemyState : EnemyStates
         {
             case States.Run:
                 Enemy.Agent.SetDestination(Enemy.AlarmPos);
+                Debug.LogError("1");
                 Enemy.EnemyCharacter.AnimateRun();
+                
                 break;
             case States.Scout:
                 Enemy.EnemyCharacter.AnimateIdle();

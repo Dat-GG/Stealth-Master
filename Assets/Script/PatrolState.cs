@@ -25,11 +25,6 @@ internal abstract class PatrolState : EnemyStates
 
     internal void OnAlarmed()
     {
-        Chase();
-    }
-
-    private void Chase()
-    {
         Enemy.ChangeState(Enemy.ChaseEnemyState);
     }
 }
